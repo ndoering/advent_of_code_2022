@@ -16,8 +16,8 @@ exec ros -Q -- $0 "$@"
   (let* ((file-contents (uiop:read-file-lines (or (second argv) #P"./assets/food.txt")))
 
 	 (integer-list (mapcar (lambda (el)
-				  (parse-integer el :junk-allowed t))
-				file-contents))
+				 (parse-integer el :junk-allowed t))
+			       file-contents))
 
 	 (integer-lists (serapeum:split-sequence nil integer-list))
 
@@ -28,9 +28,11 @@ exec ros -Q -- $0 "$@"
 						sum item)
 					  i))
 		      #'>
-		      :key #'car)))
+		      :key #'car))
 
-    (let* ((number-of-elves (parse-integer (or (first argv) "1") :junk-allowed t))
-	   (biggest-n-foods (alexandria:flatten (subseq most-foods 0 number-of-elves))))
-      (format t "~{~A kcals of food are carried by elv #~A.~%~}" biggest-n-foods))))
+	 (number-of-elves (parse-integer (or (first argv) "1") :junk-allowed t))
+
+	 (biggest-n-foods (alexandria:flatten (subseq most-foods 0 number-of-elves))))
+
+    (format t "~{~A kcals of food are carried by elv #~A.~%~}" biggest-n-foods)))
 ;;; vim: set ft=lisp lisp:
