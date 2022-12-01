@@ -1,0 +1,35 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(serapeum) :silent t)
+  )
+
+(defpackage :ros.script.aoc1.3878901712
+  (:use :cl))
+(in-package :ros.script.aoc1.3878901712)
+
+(defun main (&rest argv)
+  (let* ((file-contents (uiop:read-file-lines (or (first argv) #P"./assets/food.txt")))
+
+	 (integer-list (mapcar (lambda (el)
+				  (parse-integer el :junk-allowed t))
+				file-contents))
+
+	 (integer-lists (serapeum:split-sequence nil integer-list))
+
+	 (most-food (first (sort
+			    (loop for l in integer-lists
+				  for i from 1
+				  collect (list (loop for item in l
+						      sum item)
+						i))
+			    #'>
+			    :key #'car))))
+
+    (destructuring-bind (kcal elv) most-food
+      (format t "Elv #~A carries ~A kcals of food.~%" elv kcal))))
+;;; vim: set ft=lisp lisp:
