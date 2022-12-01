@@ -13,7 +13,8 @@ exec ros -Q -- $0 "$@"
 (in-package :ros.script.aoc1.3878901712)
 
 (defun main (&rest argv)
-  (let* ((file-contents (uiop:read-file-lines (or (second argv) #P"./assets/food.txt")))
+  (let* ((file-contents (uiop:read-file-lines
+			 (or (second argv) #P"./assets/food.txt")))
 
 	 (integer-list (mapcar (lambda (el)
 				 (parse-integer el :junk-allowed t))
@@ -30,9 +31,11 @@ exec ros -Q -- $0 "$@"
 		      #'>
 		      :key #'car))
 
-	 (number-of-elves (parse-integer (or (first argv) "1") :junk-allowed t))
+	 (number-of-elves (parse-integer
+			   (or (first argv) "1") :junk-allowed t))
 
-	 (biggest-n-foods (alexandria:flatten (subseq most-foods 0 number-of-elves))))
+	 (biggest-n-foods (alexandria:flatten
+			   (subseq most-foods 0 number-of-elves))))
 
     (format t "~{~A kcals of food are carried by elv #~A.~%~}" biggest-n-foods)))
 ;;; vim: set ft=lisp lisp:
