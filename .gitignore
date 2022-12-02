@@ -19,3 +19,4 @@
 # Hide executables from git
 aoc*
 !*.ros
+!assets/*
