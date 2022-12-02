@@ -1,0 +1,57 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(str
+			     serapeum) :silent t)
+  )
+
+(defpackage :ros.script.aoc2.3878950762
+  (:use :cl))
+(in-package :ros.script.aoc2.3878950762)
+
+(defun main (&rest argv)
+
+  (flet ((payout (other mine) (cond
+				((and (string= other "A") (string= mine "X")) 4)
+				((and (string= other "A") (string= mine "Y")) 8)
+				((and (string= other "A") (string= mine "Z")) 3)
+				((and (string= other "B") (string= mine "X")) 1)
+				((and (string= other "B") (string= mine "Y")) 5)
+				((and (string= other "B") (string= mine "Z")) 9)
+				((and (string= other "C") (string= mine "X")) 7)
+				((and (string= other "C") (string= mine "Y")) 2)
+				((and (string= other "C") (string= mine "Z")) 6)
+				(t (error "Not implemented"))))
+
+	 (strategy (other mine) (cond
+				((and (string= other "A") (string= mine "X")) 3)
+				((and (string= other "A") (string= mine "Y")) 4)
+				((and (string= other "A") (string= mine "Z")) 8)
+				((and (string= other "B") (string= mine "X")) 1)
+				((and (string= other "B") (string= mine "Y")) 5)
+				((and (string= other "B") (string= mine "Z")) 9)
+				((and (string= other "C") (string= mine "X")) 2)
+				((and (string= other "C") (string= mine "Y")) 6)
+				((and (string= other "C") (string= mine "Z")) 7)
+				(t (error "Not implemented")))))
+
+
+    (let* ((file-path (or
+		       (first argv)
+		       #P"./assets/rps_strategy.txt"))
+
+	   (file-contents (serapeum:batches
+			   (str:words (str:trim
+				       (uiop:read-file-string file-path)))
+			   2)))
+
+      (multiple-value-bind (s1 s2) (loop for (other mine) in file-contents
+					 sum (payout other mine) into strategy-1
+					 sum (strategy other mine) into strategy-2
+					 finally (return (values strategy-1 strategy-2)))
+	(format t "Strategy 1: ~A, Stragety 2: ~A~%" s1 s2)))))
+;;; vim: set ft=lisp lisp:
