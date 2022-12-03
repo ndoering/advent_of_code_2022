@@ -1,0 +1,54 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(serapeum) :silent t)
+  )
+
+(defpackage :ros.script.aoc3.3879083466
+  (:use :cl))
+(in-package :ros.script.aoc3.3879083466)
+
+(defun main (&rest argv)
+  (flet ((compute-intersection (left right)
+	   (intersection (coerce left 'list)
+			 (coerce right 'list)
+			 :test #'string=))
+
+	 (priority (c)
+	   (let ((code (char-code c)))
+	     (if (>= code 97)
+		 (- code 96)
+		 (+ (- code 64) 26))))
+
+	 (group-intersection (group)
+	   (let ((l1 (coerce (first group) 'list))
+		 (l2 (coerce (second group) 'list))
+		 (l3 (coerce (third group) 'list)))
+	     (let ((d1 (intersection l1 l2))
+		   (d2 (intersection l2 l3)))
+	       (intersection d1 d2)))))
+
+    (let* ((file-contents (uiop:read-file-lines (first argv)))
+
+	   (differences
+	     (loop for line in file-contents
+		   append (multiple-value-bind (left right) (serapeum:halves line)
+			     (remove-duplicates
+			      (compute-intersection left right)))))
+
+	   (elv-batches (loop for group in (serapeum:batches file-contents 3)
+			      append (remove-duplicates
+				      (group-intersection group)))))
+
+      (format t "The sum of priorities for part 1 is ~A.~%"
+	      (loop for d in differences
+		    sum (priority d)))
+
+      (format t "The sum of priorities for part 2 is ~A.~%"
+	      (loop for b in elv-batches
+		    sum (priority b))))))
+;;; vim: set ft=lisp lisp:
