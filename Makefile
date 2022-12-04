@@ -1,4 +1,4 @@
-TARGETS := aoc1 aoc2 aoc3
+TARGETS := aoc1 aoc2 aoc3 aoc4
 
 all: $(TARGETS)
 
