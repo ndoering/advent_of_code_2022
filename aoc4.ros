@@ -1,0 +1,58 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(str) :silent t)
+  )
+
+(defpackage :ros.script.aoc4.3879147769
+  (:use :cl))
+(in-package :ros.script.aoc4.3879147769)
+
+(defun subrangesp (range-1 range-2)
+  (let ((lower-1 (first range-1))
+	(lower-2 (first range-2))
+	(upper-1 (second range-1))
+	(upper-2 (second range-2)))
+
+    (or (and (<= lower-1 lower-2) (>= upper-1 upper-2))
+	(and (<= lower-2 lower-1) (>= upper-2 upper-1)))))
+
+(defun overlappingp (range-1 range-2)
+  (let ((lower-1 (first range-1))
+	(lower-2 (first range-2))
+	(upper-1 (second range-1))
+	(upper-2 (second range-2)))
+
+    (or (and (>= upper-1 lower-2) (>= lower-2 lower-1))
+	(and (>= upper-2 lower-1) (>= lower-1 lower-2)))))
+
+(defun parse-input-line (line)
+  (flet ((convert-chars (input)
+	   (mapcar (lambda (c) (parse-integer c :junk-allowed t)) input)))
+
+    (let ((range-strings (str:split "," line)))
+
+      (list (convert-chars (str:split "-" (first range-strings)))
+	    (convert-chars (str:split "-" (second range-strings)))))))
+
+(defun main (&rest argv)
+  (let ((file-name (or (first argv) #P"./assets/aoc4_input")))
+
+    (format t "There are ~A total overlappings.~%"
+	    (loop for line in (uiop:read-file-lines file-name)
+		  sum (if (apply #'subrangesp
+				 (parse-input-line line))
+			  1
+			  0)))
+
+    (format t "There are ~A partial overlappings.~%"
+	    (loop for line in (uiop:read-file-lines file-name)
+		  sum (if (apply #'overlappingp
+				 (parse-input-line line))
+			  1
+			  0)))))
+;;; vim: set ft=lisp lisp:
